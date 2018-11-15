@@ -23,6 +23,15 @@ class Goods(models.Model):
     goods_status = models.IntegerField
 
 
+class DetailList(models.Model):
+    list_buyer = models.ForeignKey(User)
+    list_seller = models.ForeignKey(User)
+    list_goods_id = models.IntegerField
+    list_goods_version = models.IntegerField
+    list_create_time = models.DateTimeField(default=timezone.now)
+    list_finish_time = models.DateTimeField
+
+
 class Comment(models.Model):
     comment_user = models.ForeignKey(User)
     comment_goods = models.ForeignKey(Goods)
@@ -44,5 +53,3 @@ class Cookie(models.Model):
     cookie_create_time = models.DateTimeField(default=timezone.now)
 
 
-class DetailList(models.Model):
-    
