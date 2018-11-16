@@ -7,7 +7,7 @@ class User(models.Model):
     user_password = models.CharField(max_length=20)
     user_answer = models.CharField(max_length=8)
     user_fund = models.FloatField
-    user_type = models.IntegerField(max_length=1)
+    user_type = models.IntegerField()
 
 
 class Goods(models.Model):
@@ -16,20 +16,23 @@ class Goods(models.Model):
     goods_name = models.CharField(max_length=200)
     goods_price = models.FloatField
     goods_amount = models.IntegerField
+    goods_turnover = models.IntegerField
     goods_image = models.ImageField
-    goods_description = models.CharField(max_length=100000)
+    goods_description = models.CharField(max_length=10000)
     goods_create_time = models.DateTimeField(default=timezone.now)
-    goods_update_time = models.DateTimeField(auto_now=True)
+    goods_put_on_time = models.DateTimeField()
     goods_status = models.IntegerField
 
 
 class DetailList(models.Model):
-    list_buyer = models.ForeignKey(User)
+    list_id = models.IntegerField
+    list_buyer = models.CharField(max_length=20)
     list_seller = models.ForeignKey(User)
     list_goods_id = models.IntegerField
     list_goods_version = models.IntegerField
     list_create_time = models.DateTimeField(default=timezone.now)
     list_finish_time = models.DateTimeField
+    list_status = models.IntegerField
 
 
 class Comment(models.Model):

@@ -1,3 +1,13 @@
 from django.shortcuts import render
+from .forms import *
 
-# Create your views here.
+
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            return render(request, "Welcome.html")
+        return render(request, "RegisterPage.html", {"form": form})
+    else:
+        form = RegisterForm()
+        return render(request, "RegisterPage.html", {"form": form})
