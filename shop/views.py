@@ -2,6 +2,12 @@ from django.shortcuts import render
 from .forms import *
 from .models import *
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+
+def turn_to_welcome_page(request):
+    return render(request, "Welcome.html")
 
 
 def register(request):
@@ -14,9 +20,10 @@ def register(request):
             answer = form.cleaned_data["answer"]
             if password == password_re:
                 encrypted_password = make_password(password)
-                user_to_save = User(user_name=username, user_password=encrypted_password, user_answer=answer)
+                user_to_save = User(user_name=username, user_password=encrypted_password, user_answer=answer,
+                                    user_type="1")
                 user_to_save.save()
-                return render(request, "Welcome.html")
+                return HttpResponseRedirect(reverse('shop:welcome'))
             else:
                 return render(request, "RegisterPage.html", {"form": form})
         return render(request, "RegisterPage.html", {"form": form})
