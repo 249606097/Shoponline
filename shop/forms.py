@@ -13,7 +13,11 @@ class RegisterForm(forms.Form):
                                    label="再次输入密码")
     answer = fields.CharField(widget=widgets.TextInput,
                               label="密保问题答案")
-    captcha = CaptchaField()
+    user_type = fields.ChoiceField(label="用户类型",
+                                   initial=2,
+                                   choices=((1, '买家'), (2, '卖家')))
+    captcha = CaptchaField(label="验证码")
+
 
 
 

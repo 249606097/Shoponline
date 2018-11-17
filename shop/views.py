@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 
-def turn_to_welcome_page(request):
+def jump_to_welcome_page(request):
     return render(request, "Welcome.html")
 
 
@@ -18,10 +18,11 @@ def register(request):
             password = form.cleaned_data["password"]
             password_re = form.cleaned_data["password_re"]
             answer = form.cleaned_data["answer"]
+            user_type = form.cleaned_data["user_type"]
             if password == password_re:
                 encrypted_password = make_password(password)
                 user_to_save = User(user_name=username, user_password=encrypted_password, user_answer=answer,
-                                    user_type="1")
+                                    user_type=user_type)
                 user_to_save.save()
                 return HttpResponseRedirect(reverse('shop:welcome'))
             else:
