@@ -16,11 +16,14 @@ class Goods(models.Model):
     goods_name = models.CharField(max_length=200)
     goods_price = models.FloatField
     goods_amount = models.IntegerField
+    # 商品营销额
     goods_turnover = models.IntegerField
+
     goods_image = models.ImageField
     goods_description = models.CharField(max_length=10000)
     goods_create_time = models.DateTimeField(default=timezone.now)
     goods_put_on_time = models.DateTimeField()
+    # 商品状态
     goods_status = models.IntegerField
 
 
@@ -52,7 +55,7 @@ class ShopCar(models.Model):
 
 class Cookie(models.Model):
     cookie_user_name = models.CharField(max_length=20)
-    cookie_key = models.CharField(max_length=10)
+    cookie_key = models.CharField(max_length=30)
     cookie_create_time = models.DateTimeField(default=timezone.now)
 
 

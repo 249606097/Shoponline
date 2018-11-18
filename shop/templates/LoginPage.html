@@ -2,18 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>注册</title>
+    <title>登陆</title>
 </head>
 <body>
-    <form action="{% url 'shop:register' %}" method="POST">
+    <form action="{% url 'shop:login' %}" method="POST">
         {% csrf_token %}
         {% for foo in form %}
             <p>{{ foo.label }}:{{ foo }}</p>
         {% endfor %}
-    <input type="submit"><br/>
+    <input type="submit" value="登陆"><br/>
     {{ result }}
-    <input type="checkbox" value="">
-
 
     </form>
 </body>

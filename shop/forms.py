@@ -19,9 +19,12 @@ class RegisterForm(forms.Form):
     captcha = CaptchaField(label="验证码")
 
 
-
-
-
+class LoginForm(forms.Form):
+    username = fields.CharField(widget=widgets.TextInput,
+                                label="用户")
+    password = fields.CharField(widget=widgets.PasswordInput,
+                                label="密码")
+    captcha = CaptchaField(label="验证码")
 
 
 
