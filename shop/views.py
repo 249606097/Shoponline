@@ -1,14 +1,20 @@
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
+from django.conf import settings
+from PIL import Image
+
 from .forms import *
 from .models import *
+
 import datetime
 import re
 import random
 import string
-from django.http import HttpResponse
+import os
 
 
 def jump_to_welcome_page(request):
@@ -177,24 +183,9 @@ def goods_list(request):
     return render(request, "GoodsList.html", {"goods": goods})
 
 
-
-
-
-
-
-
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from PIL import Image
-from django.contrib import messages
-import os
-from django.conf import settings
-
-
-
 def index(request):
     print("123123")
+    print(settings.MEDIA_ROOT)
     return render(request, 'index.html')
 
 
@@ -208,15 +199,32 @@ def upload(request):
         # print(os.path(file))
         img.thumbnail((500, 500), Image.ANTIALIAS)
         print(settings.IMAGE_ROOT)
+
+
+        extension = os.path.splitext(file.name)[1]
+        now_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        random_number = random.randint(0, 999999)
+        file_name = str(now_time) + str(random_number).zfill(6)
+
+
         try:
             print(file.name)
-            img.save('D:\\Study\\IT_Study\\shoponline\\static/img/' + file.name, img.format)
+
+            # extension = os.path.splitext(file.name)[1]
+            # now_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            # random_number = random.randint(0, 999999)
+            # file_name = str(now_time) + str(random_number).zfill(6)
+
+            img.save(settings.IMAGE_ROOT[0] + file_name + extension, img.format)
             print('D:\\Study\\IT_Study\\shoponline\\static/img/' + file.name, img.format)
             print("img save pass")
         except:
             print("img.save error")
         # 图片的name和format都是动态获取的，支持png，jpeg，gif等
-        path = settings.MEDIA_ROOT + file.name
+
+        # 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处
+        path = settings.MEDIA_ROOT + file_name + extension
+        # 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处
 
         print("upload end")
         return HttpResponse(
@@ -227,8 +235,25 @@ def upload(request):
 
 
 @csrf_exempt
-def see(request):
+def create_good(request):
     print("000000")
     print(request.POST.get('content'))
-    content = request.POST.get('content')
-    return render(request, "Welcome.html", {"content": content})
+    name = request.POST.get('name')
+    price = request.POST.get('price')
+    amount = request.POST.get('amount')
+    description = request.POST.get('description')
+    # picture = request.POST.get('picture')
+    # print(picture)
+    seller = User.objects.get(id=1)
+    goods_to_save = Goods(name=name,
+                          price=price,
+                          amount=amount,
+                          description=description,
+                          number=1,
+                          version=1,
+                          seller=seller,
+                          turnover=1,
+                          status=1,
+                          put_on_time=timezone.now())
+    goods_to_save.save()
+    return render(request, "Welcome.html", {"description": description})

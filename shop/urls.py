@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'upload/$', views.upload, name='upload_img'),
     url(r'^static/img/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 
-    url(r'^00', views.see, name="see"),
+    url(r'^create_good', views.create_good, name="create_good"),
 ]

@@ -7,9 +7,13 @@
 <body>
     <form action="{% url 'shop:list' %}" method="POST">
         {% for foo in goods %}
+            ---------------------------------------------------------------------------
+            <br/>
         商品名：{{ foo.name }}<br/>
         价格：￥{{ foo.price }}<br/>
         介绍：{{ foo.description|safe }}<br/>
+            ---------------------------------------------------------------------------
+            <br/><br/>
         {% endfor %}
     </form>
 </body>
