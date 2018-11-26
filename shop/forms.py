@@ -14,9 +14,14 @@ class RegisterForm(forms.Form):
     answer = fields.CharField(widget=widgets.TextInput,
                               label="密保问题答案")
     user_type = fields.ChoiceField(label="用户类型",
-                                   initial=2,
+                                   initial=1,
                                    choices=((1, '买家'), (2, '卖家')))
     captcha = CaptchaField(label="验证码")
+
+    # def clean_password(self):
+    #     raw_password = self.cleaned_data.get('password')
+    #     pass
+    #     return raw_password
 
 
 class LoginForm(forms.Form):

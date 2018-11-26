@@ -1,13 +1,14 @@
 from django.shortcuts import render
-from .forms import *
-from .models import *
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from .forms import *
+from .models import *
 import datetime
 import re
 import random
 import string
+from django.http import HttpResponse
 
 
 def jump_to_welcome_page(request):
@@ -28,9 +29,9 @@ def check_cookie(request):
         pass
     else:
         cookie = request.COOKIES.get("key")
-        result = Cookie.objects.filter(cookie_key=cookie)
+        result = Cookie.objects.filter(key=cookie)
         if len(result) != 0:
-            username = result[0].cookie_user_name
+            username = result[0].name
             return username
 
 
@@ -47,7 +48,7 @@ def username_test(username):
     elif re.search(r' ', username):
         result = "用户名不能含有空格"
         return result
-    elif len(User.objects.filter(user_name=username)) != 0:
+    elif len(User.objects.filter(name=username)) != 0:
         result = "用户名已经被注册"
         return result
     else:
@@ -110,10 +111,10 @@ def register(request):
                 return render(request, "RegisterPage.html", {"form": form, "result": result})
             encrypted_password = make_password(password)
             encrypted_answer = make_password(answer)
-            user_to_save = User(user_name=username,
-                                user_password=encrypted_password,
-                                user_answer=encrypted_answer,
-                                user_type=user_type)
+            user_to_save = User(name=username,
+                                password=encrypted_password,
+                                answer=encrypted_answer,
+                                type=user_type)
             user_to_save.save()
             return HttpResponseRedirect(reverse('shop:welcome'))
 
@@ -130,7 +131,7 @@ def login(request):
         else:
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
-            user = User.objects.filter(user_name=username)
+            user = User.objects.filter(name=username)
             if len(user) == 0:
                 result = "用户不存在"
                 return render(request, "LoginPage.html", {"form": form, "result": result})
@@ -141,7 +142,93 @@ def login(request):
                 random_string = ''.join(random.sample(string.ascii_letters + string.digits, 30))
                 response = HttpResponseRedirect(reverse('shop:welcome'))
                 response.set_cookie("key", random_string, 3600, '/')
-                cookie_to_save = Cookie(cookie_user_name=username,
-                                        cookie_key=random_string)
+                cookie_to_save = Cookie(user_name=username,
+                                        key=random_string)
                 cookie_to_save.save()
                 return response
+
+
+def edit(request):
+    return render(request, "Add.html")
+
+
+def add(request):
+    good_name = request.POST.get('good_name')
+    good_price = request.POST.get('good_price')
+    description = request.POST.get('content')
+    user = User.objects.get(id=1)  # 先默认
+    good_to_save = Goods(name=good_name,
+                         number=1,
+                         version=1,
+                         amount=0,
+                         turnover=0,
+                         status=0,
+                         description=description,
+                         price=good_price,
+                         seller=user,
+                         put_on_time=timezone.now())
+    good_to_save.save()
+    # return render(request, "Add.html", {"content": content})
+    return render(request, "show.html", {"html": description})
+
+
+def goods_list(request):
+    goods = Goods.objects.all()
+    return render(request, "GoodsList.html", {"goods": goods})
+
+
+
+
+
+
+
+
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
+from django.contrib import messages
+import os
+from django.conf import settings
+
+
+
+def index(request):
+    print("123123")
+    return render(request, 'index.html')
+
+
+@csrf_exempt
+def upload(request):
+    try:
+        file = request.FILES['image']
+        print(file.name)
+        # form提交的文件的名字，上面html里面的name
+        img = Image.open(file)
+        # print(os.path(file))
+        img.thumbnail((500, 500), Image.ANTIALIAS)
+        print(settings.IMAGE_ROOT)
+        try:
+            print(file.name)
+            img.save('D:\\Study\\IT_Study\\shoponline\\static/img/' + file.name, img.format)
+            print('D:\\Study\\IT_Study\\shoponline\\static/img/' + file.name, img.format)
+            print("img save pass")
+        except:
+            print("img.save error")
+        # 图片的name和format都是动态获取的，支持png，jpeg，gif等
+        path = settings.MEDIA_ROOT + file.name
+
+        print("upload end")
+        return HttpResponse(
+            "<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('%s').closest('.mce-window').find('.mce-primary').click();</script>" % path)
+
+    except Exception:
+        return HttpResponse("error")
+
+
+@csrf_exempt
+def see(request):
+    print("000000")
+    print(request.POST.get('content'))
+    content = request.POST.get('content')
+    return render(request, "Welcome.html", {"content": content})
