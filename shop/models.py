@@ -12,14 +12,14 @@ class User(models.Model):
 
 
 class Goods(models.Model):
-    number = models.IntegerField()
+    number = models.CharField(max_length=20)
     version = models.IntegerField()
     seller = models.ForeignKey(User)
     name = models.CharField(max_length=200)
     price = models.FloatField()
     amount = models.IntegerField()
     turnover = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='img')
+    image = models.CharField(max_length=100)
     description = HTMLField()
     create_time = models.DateTimeField(default=timezone.now)
     put_on_time = models.DateTimeField()
@@ -27,10 +27,10 @@ class Goods(models.Model):
 
 
 class DetailList(models.Model):
-    number = models.IntegerField()
+    number = models.CharField(max_length=20)
     buyer = models.ForeignKey(User)
     seller = models.CharField(max_length=20)
-    goods_number = models.IntegerField()
+    goods_number = models.CharField(max_length=20)
     goods_version = models.IntegerField()
     create_time = models.DateTimeField(default=timezone.now)
     finish_time = models.DateTimeField()
@@ -46,7 +46,7 @@ class Comment(models.Model):
 
 class ShopCar(models.Model):
     user = models.ForeignKey(User)
-    goods_number = models.IntegerField()
+    goods_number = models.CharField(max_length=20)
     goods_version = models.IntegerField()
     goods_amount = models.IntegerField(default=1)
 
