@@ -32,7 +32,8 @@ class LoginForm(forms.Form):
     captcha = CaptchaField(label="验证码")
 
 
-
+class CaptchaForm(forms.Form):
+    captcha = CaptchaField(label="验证码")
 
 
 

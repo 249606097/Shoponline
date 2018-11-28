@@ -185,9 +185,11 @@ def goods_list(request):
 
 
 def index(request):
-    return render(request, 'index.html')
+    form = CaptchaForm()
+    return render(request, 'index.html', {"form": form})
 
 
+# 富文本编辑器上传图片
 @csrf_exempt
 def upload(request):
     try:
@@ -216,14 +218,49 @@ def upload(request):
         return HttpResponse("error")
 
 
+def number_test(number):
+    if len(number) == 0:
+        result = "请输入数据"
+        return result
+    elif not re.search(r'^[-+]?[0-9]+\.?[0-9]+$', number):
+        result = "请输入正确的数据"
+        return result
+    else:
+        result = True
+        return result
+
+
 @csrf_exempt
 def create_good(request):
+    form = CaptchaForm(request.POST)
+
     name = request.POST.get('name')
     price = request.POST.get('price')
     amount = request.POST.get('amount')
     description = request.POST.get('description')
 
+    if len(name) == 0:
+        result = "请输入商品名"
+        form = CaptchaForm()
+        return render(request, "index.html", {"result": result, "form": form})
+
+    result = number_test(price)
+    if result is not True:
+        form = CaptchaForm()
+        return render(request, "index.html", {"result": result, "form": form})
+
+    result = number_test(amount)
+    if result is not True:
+        form = CaptchaForm()
+        return render(request, "index.html", {"result": result, "form": form})
+
+    if not form.is_valid():
+        result = "验证码错误"
+        form = CaptchaForm()
+        return render(request, "index.html", {"result": result, "form": form})
+
     file = request.FILES.get('img')
+
     if file is None:
         path = settings.MEDIA_ROOT + 'default.gif'
     else:
@@ -235,12 +272,12 @@ def create_good(request):
         now_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         random_number = random.randint(0, 999999)
         file_name = str(now_time) + str(random_number).zfill(6)
-
-        picture.save(settings.IMAGE_ROOT[0] + file_name + extension, picture.format)
         path = settings.MEDIA_ROOT + file_name + extension
 
+        picture.save(settings.IMAGE_ROOT[0] + file_name + extension, picture.format)
+
     # 数据库image的在 html 的显示代码
-    # <p><img src="static/img/20181127164653035842.jpg" alt="" width="350" height="350"/></p>
+    # <p><img src="static/img/default.gif" alt="" width="200" height="200"/></p>
     picture_url = '<p><img src="' + path + '" alt="" width="200" height="200"/></p>'
 
     # 商品编号的生成
@@ -248,7 +285,7 @@ def create_good(request):
     number_random = random.randint(0, 999999)
     number = str(number_time) + str(number_random).zfill(6)
 
-    seller = User.objects.get(id=1)
+    seller = User.objects.get(id=1)  # 默认
     goods_to_save = Goods(name=name,
                           price=price,
                           amount=amount,
@@ -262,3 +299,28 @@ def create_good(request):
                           image=picture_url)
     goods_to_save.save()
     return render(request, "Welcome.html", {"description": description})
+
+
+def good_page(request, number):
+    valid_confirm = Goods.objects.filter(number=number)
+    if len(valid_confirm) == 0:
+        return render(request, "NOPage.html", {})
+    else:
+        good = Goods.objects.get(number=number)
+        description = good.description
+        return render(request, "GoodPage.html", {"good": good, "description": description})
+
+
+def jump_to_none(request):
+    return render(request, "NOPage.html")
+
+
+
+
+
+
+
+
+
+
+

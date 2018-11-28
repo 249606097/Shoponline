@@ -11,6 +11,8 @@ from django.conf import settings
 print(settings.MEDIA_ROOT)
 
 urlpatterns = [
+    url(r'^static/img/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
+
     url(r'^welcome', views.jump_to_welcome_page, name='welcome'),
 
     url(r'^register', views.register, name='register'),
@@ -18,15 +20,18 @@ urlpatterns = [
     url(r'^edit', views.edit, name='edit'),
     url(r'^add', views.add, name='add'),
     url(r'^list', views.goods_list, name='list'),
-
-
+    url(r'^(?P<number>\d+)', views.good_page, name='good_page'),
 
     # url(r'^add/$', views.add),
-    # url(r'do_add/$', views.do_add)
+    # url(r'do_add/$', views.do_add),
 
     url(r'^index', views.index, name='index'),
     url(r'upload/$', views.upload, name='upload_img'),
-    url(r'^static/img/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
+    # url(r'^static/img/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 
     url(r'^create_good', views.create_good, name="create_good"),
+
+
+    url(r'$', views.jump_to_none),
 ]
+

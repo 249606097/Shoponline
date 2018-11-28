@@ -135,6 +135,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme': 'advanced',
     'width': 600,
     'height': 400,
+    'relative_urls': False,
 }
 
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
@@ -147,7 +148,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/static/img/'
+MEDIA_ROOT = 'static/img/'
 
 IMAGE_ROOT = [
         os.path.join(BASE_DIR, "static/img/"),
@@ -156,3 +157,5 @@ IMAGE_ROOT = [
 STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "static"),
         ]
+
+

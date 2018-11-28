@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ good.name }}</title>
+</head>
+<body>
+
+    商品编号：{{ good.number }}<br/>
+    商家：{{ good.seller.name }}<br/>
+    商品名：{{ good.name }}<br/>
+    价格：￥{{ good.price }}<br/>
+    库存：{{ good.amount }}<br/>
+    成交量：{{ good.turnover }}<br/>
+    头像：{{ good.image|safe }}<br/>
+    介绍：{{ good.description|safe }}<br/><br/><br/>
+    上架时间：{{ good.put_on_time }}<br/>
+</body>
+</html>
