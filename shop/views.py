@@ -184,9 +184,9 @@ def goods_list(request):
     return render(request, "GoodsList.html", {"goods": goods})
 
 
-def index(request):
+def edit_good(request):
     form = CaptchaForm()
-    return render(request, 'index.html', {"form": form})
+    return render(request, 'EditGood.html', {"form": form})
 
 
 # 富文本编辑器上传图片
@@ -211,9 +211,13 @@ def upload(request):
         path = settings.MEDIA_ROOT + file_name + extension
         # 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处 注意此处
 
-        return HttpResponse(
-            "<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('%s').closest('.mce-window').find('.mce-primary').click();</script>" % path)
+        # return HttpResponse(
+        #     "<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('%s').closest('.mce-window').find('.mce-primary').click();</script>" % path)
 
+        return HttpResponse(
+            "<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('"
+            + "/../.." + path +
+            "').closest('.mce-window').find('.mce-primary').click();</script>")
     except Exception:
         return HttpResponse("error")
 
@@ -222,12 +226,21 @@ def number_test(number):
     if len(number) == 0:
         result = "请输入数据"
         return result
-    elif not re.search(r'^[-+]?[0-9]+\.?[0-9]+$', number):
+    # elif not re.search(r'^[-+]?[0-9]+\.?[0-9]+$', number):
+    elif not re.search(r'^[0-9]+\.?[0-9]+$', number):
         result = "请输入正确的数据"
         return result
     else:
         result = True
         return result
+
+
+def name_test(name):
+    if len(name) == 0:
+        result = "请输入商品名"
+        return result
+    else:
+        return True
 
 
 @csrf_exempt
@@ -239,25 +252,27 @@ def create_good(request):
     amount = request.POST.get('amount')
     description = request.POST.get('description')
 
-    if len(name) == 0:
-        result = "请输入商品名"
+    good = {"name": name, "price": price, "amount": amount, "description": description}
+
+    result = name_test(name)
+    if result is not True:
         form = CaptchaForm()
-        return render(request, "index.html", {"result": result, "form": form})
+        return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     result = number_test(price)
     if result is not True:
         form = CaptchaForm()
-        return render(request, "index.html", {"result": result, "form": form})
+        return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     result = number_test(amount)
     if result is not True:
         form = CaptchaForm()
-        return render(request, "index.html", {"result": result, "form": form})
+        return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     if not form.is_valid():
         result = "验证码错误"
         form = CaptchaForm()
-        return render(request, "index.html", {"result": result, "form": form})
+        return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     file = request.FILES.get('img')
 
@@ -280,45 +295,98 @@ def create_good(request):
     # <p><img src="static/img/default.gif" alt="" width="200" height="200"/></p>
     picture_url = '<p><img src="' + path + '" alt="" width="200" height="200"/></p>'
 
-    # 商品编号的生成
-    number_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    number_random = random.randint(0, 999999)
-    number = str(number_time) + str(number_random).zfill(6)
+    number = request.POST.get('number')
 
-    seller = User.objects.get(id=1)  # 默认
-    goods_to_save = Goods(name=name,
-                          price=price,
-                          amount=amount,
-                          description=description,
-                          number=number,
-                          version=1,
-                          seller=seller,
-                          turnover=0,
-                          status=0,
-                          put_on_time=timezone.now(),
-                          image=picture_url)
-    goods_to_save.save()
+    good = Goods.objects.filter(number=number)
+    if len(good) != 0:
+        good = good[0]
+        version = str(int(good.version) + 1)
+        old_good_to_save = OldGoods(number=good.number,
+                                    version=good.version,
+                                    seller=good.seller,
+                                    name=good.name,
+                                    price=good.price,
+                                    image=good.image,
+                                    description=good.description,
+                                    create_time=good.create_time,
+                                    put_on_time=good.put_on_time)
+        old_good_to_save.save()
+
+        good.version = version
+        good.name = name
+        good.price = price
+        good.amount = amount
+        good.image = picture_url
+        good.description = description
+        good.put_on_time = timezone.now()
+        good.save()
+
+    else:
+        # 新商品 生成
+        number_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        number_random = random.randint(0, 999999)
+        number = str(number_time) + str(number_random).zfill(6)
+
+        seller = User.objects.get(id=1)  # 默认
+        good_to_save = Goods(name=name,
+                             price=price,
+                             amount=amount,
+                             description=description,
+                             number=number,
+                             version=1,
+                             seller=seller,
+                             turnover=0,
+                             status=0,
+                             put_on_time=timezone.now(),
+                             image=picture_url)
+        good_to_save.save()
     return render(request, "Welcome.html", {"description": description})
 
 
 def good_page(request, number):
-    valid_confirm = Goods.objects.filter(number=number)
-    if len(valid_confirm) == 0:
+    good = Goods.objects.filter(number=number)
+    if len(good) == 0:
         return render(request, "NOPage.html", {})
     else:
-        good = Goods.objects.get(number=number)
-        description = good.description
-        return render(request, "GoodPage.html", {"good": good, "description": description})
+        good.order_by('version')
+        good = good[0]
+        return render(request, "GoodPage.html", {"good": good})
 
 
 def jump_to_none(request):
     return render(request, "NOPage.html")
 
 
+def re_edit(request, number):
+    good = Goods.objects.filter(number=number)
+    if len(good) == 0:
+        return render(request, "NOPage.html", {})
+    else:
+        good.order_by('version')
+        good = good[0]
+        form = CaptchaForm()
+        return render(request, "EditGood.html", {"good": good, "form": form})
 
 
+def delete_good(request, number):
+    good = Goods.objects.filter(number=number)
+    if len(good) == 0:
+        return render(request, "NOPage.html")
 
+    good = good[0]
+    old_good_to_save = OldGoods(number=good.number,
+                                version=good.version,
+                                seller=good.seller,
+                                name=good.name,
+                                price=good.price,
+                                image=good.image,
+                                description=good.description,
+                                create_time=good.create_time,
+                                put_on_time=good.put_on_time)
+    old_good_to_save.save()
 
+    good.delete()
+    return render(request, "Welcome.html", {})
 
 
 

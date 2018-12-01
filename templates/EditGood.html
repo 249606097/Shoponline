@@ -26,15 +26,18 @@
 </head>
 
 <body>
-    {{ result }}<br/><br/>
+    <h2>{{ result }}</h2><br/><br/>
 <form action="{% url 'shop:create_good' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    商品名：<input type="text" name="name" value="{{ name }}"><br/>
-    价格：<input type="text" name="price" value="{{ price }}"><br/>
-    库存：<input type="text" name="amount" value="{{ amount }}"><br/>
-    商品头像：<input type="file" name="img" value="{{ img }}"><br/>
+
+    <p hidden>商品编号<input type="text" name="number" value="{{ good.number }}"></p>
+
+    商品名：<input type="text" name="name" value="{{ good.name }}"><br/>
+    价格：<input type="text" name="price" value="{{ good.price }}"><br/>
+    库存：<input type="text" name="amount" value="{{ good.amount }}"><br/>
+    商品头像：<input type="file" name="img" value="{{ good.image }}"><br/>
     介绍：
-    <textarea id="my_editor" rows="25" name="description"></textarea>
+    <textarea id="my_editor" rows="25" name="description">{{ good.description }}</textarea>
     <br/>{{ form.lable }}{{ form }}<br/>
 
     <input type="submit">

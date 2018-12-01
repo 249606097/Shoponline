@@ -148,7 +148,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = 'static/img/'
+MEDIA_ROOT = '/static/img/'
 
 IMAGE_ROOT = [
         os.path.join(BASE_DIR, "static/img/"),

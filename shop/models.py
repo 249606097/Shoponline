@@ -26,6 +26,20 @@ class Goods(models.Model):
     status = models.IntegerField(default=0)
 
 
+class OldGoods(models.Model):
+    number = models.CharField(max_length=20)
+    version = models.IntegerField()
+    seller = models.ForeignKey(User)
+    name = models.CharField(max_length=200)
+    price = models.FloatField()
+    image = models.CharField(max_length=100)
+    description = HTMLField()
+    create_time = models.DateTimeField()
+    put_on_time = models.DateTimeField()
+    put_off_time = models.DateTimeField(default=timezone.now)
+    status = models.IntegerField(default=0)
+
+
 class DetailList(models.Model):
     number = models.CharField(max_length=20)
     buyer = models.ForeignKey(User)
