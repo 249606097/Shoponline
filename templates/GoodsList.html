@@ -12,7 +12,6 @@
         商品编码：{{ foo.number }}<br/>
         商品名：{{ foo.name }}<br/>
         价格：￥{{ foo.price }}<br/>
-        介绍：{{ foo.description|safe }}<br/>
         头像：{{ foo.image|safe }}
         <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">查看商品详情</a><br/>
             ---------------------------------------------------------------------------

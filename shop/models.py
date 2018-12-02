@@ -37,7 +37,6 @@ class OldGoods(models.Model):
     create_time = models.DateTimeField()
     put_on_time = models.DateTimeField()
     put_off_time = models.DateTimeField(default=timezone.now)
-    status = models.IntegerField(default=0)
 
 
 class DetailList(models.Model):
@@ -46,9 +45,10 @@ class DetailList(models.Model):
     seller = models.CharField(max_length=20)
     goods_number = models.CharField(max_length=20)
     goods_version = models.IntegerField()
+    amount = models.IntegerField(default=1)
     create_time = models.DateTimeField(default=timezone.now)
-    finish_time = models.DateTimeField()
-    status = models.IntegerField()
+    finish_time = models.DateTimeField(null=True)
+    status = models.IntegerField(default=0)
 
 
 class Comment(models.Model):

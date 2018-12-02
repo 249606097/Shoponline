@@ -18,18 +18,19 @@
     <a href="{% url 'shop:re_edit' good.number %}" class="btn btn-primary">修改</a><br/>
     <a href="{% url 'shop:delete_good' good.number %}" class="btn btn-primary">删除</a><br/>
 
+<form action="{% url 'shop:add_to_car' good.number %}">
+    <input type="submit" value="添加到购物车">
+</form>
 
-{#    #####################################################################################}
-{#<a {{ a }}>#}
-{#    <form action="{% url 'shop:re_edit' good.number %}">#}
-{#     <input type="submit" value="修改">#}
-{# </form>#}
-{##}
-{# <form action="{% url 'shop:delete_good' good.number %}">#}
-{#     <input type="submit" value="删除">#}
-{# </form>#}
-{##}
-{#</a>#}
+<a {{ seller_authority }}>
+    <form action="{% url 'shop:re_edit' good.number %}">
+     <input type="submit" value="修改">
+ </form>
+
+ <form action="{% url 'shop:delete_good' good.number %}">
+     <input type="submit" value="删除">
+ </form>
+</a>
 
 </body>
 </html>

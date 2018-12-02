@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+</head>
+<body>
+<form action="{% url 'shop:buy' %}" method="POST">
+{% csrf_token %}
+        {% for foo in good %}
+        -----------------------------------------------------------------------------------<br/>
+        商品名：{{ foo.name }}<br/>
+        价格：{{ foo.price }}<br/>
+        {{ foo.image|safe }}<br/>
+        <input type="checkbox" value="{{ foo.number }}" name="checkbox_list">数量：{{ foo.amount }}
+
+<br/>
+        <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">查看商品详情</a><br/>
+        -----------------------------------------------------------------------------------<br/>
+    {% endfor %}
+    <input type="submit" value="购买">
+</form>
+
+</body>
+</html>

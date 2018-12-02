@@ -37,9 +37,11 @@
     库存：<input type="text" name="amount" value="{{ good.amount }}"><br/>
     商品头像：<input type="file" name="img" value="{{ good.image }}"><br/>
     介绍：
-    <textarea id="my_editor" rows="25" name="description">{{ good.description }}</textarea>
-    <br/>{{ form.lable }}{{ form }}<br/>
 
+    <textarea id="my_editor" rows="25" name="description">{{ good.description|safe }}</textarea>
+
+    <br/>{{ form.lable }}{{ form }}<br/>
+    {{ good.description|safe }}
     <input type="submit">
 </form>
 

@@ -15,7 +15,8 @@ urlpatterns = [
 
     # url(r'^edit', views.edit, name='edit'),
 
-    url(r'^add', views.add, name='add'),
+    # url(r'^add', views.add, name='add'),
+
     url(r'^list', views.goods_list, name='list'),
     url(r'^good/(?P<number>\d+)$', views.good_page, name='good_page'),
     url(r'^delete_good/(?P<number>\d+)/$', views.delete_good, name="delete_good"),
@@ -24,7 +25,7 @@ urlpatterns = [
     # url(r'do_add/$', views.do_add),
 
     url(r'^edit', views.edit_good, name='edit'),
-    url(r're_edit/(?P<number>\d+)', views.re_edit, name='re_edit'),
+    url(r're_edit/(?P<number>\d+)/$', views.re_edit, name='re_edit'),
 
     url(r'^index', views.edit_good, name='index'),
     url(r'upload/$', views.upload, name='upload_img'),
@@ -32,6 +33,11 @@ urlpatterns = [
 
     url(r'^create_good', views.create_good, name="create_good"),
 
+    url(r'^add_to_car/(?P<number>\d+)/$', views.add_to_car, name='add_to_car'),
+    url(r'^my_car', views.car_page, name='my_car'),
+
+    url(r'^buy', views.buy, name='buy'),
+    url(r'^pay', views.pay, name='pay'),
 
     url(r'$', views.jump_to_none),
 ]

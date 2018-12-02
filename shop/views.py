@@ -33,13 +33,15 @@ def clean_cookie():
 def check_cookie(request):
     clean_cookie()
     if not request.COOKIES.get("key"):
-        pass
+        return False
     else:
         cookie = request.COOKIES.get("key")
         result = Cookie.objects.filter(key=cookie)
         if len(result) != 0:
             username = result[0].name
             return username
+        else:
+            return False
 
 
 def username_test(username):
@@ -218,6 +220,7 @@ def upload(request):
             "<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('"
             + "/../.." + path +
             "').closest('.mce-window').find('.mce-primary').click();</script>")
+
     except Exception:
         return HttpResponse("error")
 
@@ -227,7 +230,7 @@ def number_test(number):
         result = "请输入数据"
         return result
     # elif not re.search(r'^[-+]?[0-9]+\.?[0-9]+$', number):
-    elif not re.search(r'^[0-9]+\.?[0-9]+$', number):
+    elif not (re.search(r'^[0-9]+\.?[0-9]+$', number) or re.search(r'^[0-9]+\.?[0-9]?$', number)):
         result = "请输入正确的数据"
         return result
     else:
@@ -251,20 +254,24 @@ def create_good(request):
     price = request.POST.get('price')
     amount = request.POST.get('amount')
     description = request.POST.get('description')
+    print(description)
 
     good = {"name": name, "price": price, "amount": amount, "description": description}
 
     result = name_test(name)
+    print("1")
     if result is not True:
         form = CaptchaForm()
         return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     result = number_test(price)
+    print("1")
     if result is not True:
         form = CaptchaForm()
         return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
 
     result = number_test(amount)
+    print("1")
     if result is not True:
         form = CaptchaForm()
         return render(request, "EditGood.html", {"result": result, "form": form, "good": good})
@@ -293,7 +300,7 @@ def create_good(request):
 
     # 数据库image的在 html 的显示代码
     # <p><img src="static/img/default.gif" alt="" width="200" height="200"/></p>
-    picture_url = '<p><img src="' + path + '" alt="" width="200" height="200"/></p>'
+    picture_url = '<p><img src="' + path + '" alt="" width="100" height="100"/></p>'
 
     number = request.POST.get('number')
 
@@ -344,13 +351,17 @@ def create_good(request):
 
 
 def good_page(request, number):
+    name = check_cookie(request)
     good = Goods.objects.filter(number=number)
+    seller_authority = "hidden"
     if len(good) == 0:
         return render(request, "NOPage.html", {})
     else:
         good.order_by('version')
         good = good[0]
-        return render(request, "GoodPage.html", {"good": good})
+        if good.seller.name == name:
+            seller_authority = ""
+        return render(request, "GoodPage.html", {"good": good, "seller_authority": seller_authority})
 
 
 def jump_to_none(request):
@@ -387,6 +398,82 @@ def delete_good(request, number):
 
     good.delete()
     return render(request, "Welcome.html", {})
+
+
+def add_to_car(request, number):
+    print(number)
+    user = User.objects.get(id=1)
+    good = Goods.objects.filter(number=number)
+    if len(good) == 0:
+        return render(request, "NOPage.html")
+    else:
+        good = good[0]
+    shop_car_to_save = ShopCar(user=user,
+                               goods_number=number,
+                               goods_version=good.version)
+    shop_car_to_save.save()
+    return render(request, "Welcome.html", {})
+
+
+def car_page(request):
+    user = User.objects.get(id=1)
+    car = ShopCar.objects.filter(user=user)
+    good = []
+    for foo in car:
+        if len(Goods.objects.filter(number=foo.goods_number)) == 0:
+            pass
+        else:
+            good.append(Goods.objects.filter(number=foo.goods_number)[0])
+    return render(request, "ShopCar.html", {"good": good})
+
+
+def buy(request):
+    seller = User.objects.get(id=1)
+    user = User.objects.get(id=1)
+    goods_number = request.POST.getlist('checkbox_list')
+
+    # 订单号的生成
+    number_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    number_random = random.randint(0, 999999)
+    number = str(number_time) + str(number_random).zfill(6)
+    total_money = 0
+    for one in goods_number:
+        good = Goods.objects.filter(number=one)[0]
+        total_money = total_money + good.price
+        detail_list_to_save = DetailList(number=number,
+                                         buyer=user,
+                                         seller=seller.name,
+                                         goods_number=good.number,
+                                         goods_version=good.version,
+                                         status=0)
+        detail_list_to_save.save()
+        print(total_money)
+    return render(request, "Welcome.html", {"total_money": total_money})
+
+
+def pay(request):
+    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
