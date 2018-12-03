@@ -401,54 +401,96 @@ def delete_good(request, number):
 
 
 def add_to_car(request, number):
-    print(number)
     user = User.objects.get(id=1)
+
     good = Goods.objects.filter(number=number)
     if len(good) == 0:
         return render(request, "NOPage.html")
     else:
         good = good[0]
-    shop_car_to_save = ShopCar(user=user,
-                               goods_number=number,
-                               goods_version=good.version)
-    shop_car_to_save.save()
+        valid_confirm = ShopCar.objects.filter(username=user.name,
+                                               good=good)
+        if len(valid_confirm) == 0:
+            shop_car_to_save = ShopCar(username=user.name,
+                                       good=good)
+            shop_car_to_save.save()
     return render(request, "Welcome.html", {})
+
+
+def delete_from_car(request, number):
+    user = User.objects.get(id=1)
+
+    good = Goods.objects.filter(number=number)
+    if len(good) == 0:
+        return render(request, "NOPage.html")
+
+    good_in_car = ShopCar.objects.filter(username=user.name,
+                                         good=good)
+    if len(good_in_car) == 0:
+        return render(request, "NOPage.html")
+    else:
+        good_in_car.delete()
+
+    return HttpResponseRedirect(reverse('shop:my_car'))
 
 
 def car_page(request):
     user = User.objects.get(id=1)
-    car = ShopCar.objects.filter(user=user)
-    good = []
-    for foo in car:
-        if len(Goods.objects.filter(number=foo.goods_number)) == 0:
-            pass
-        else:
-            good.append(Goods.objects.filter(number=foo.goods_number)[0])
-    return render(request, "ShopCar.html", {"good": good})
+    car = ShopCar.objects.filter(username=user.name)
+    return render(request, "ShopCar.html", {"car": car})
+
+
+def car_increase_amount(request, number):
+    user = User.objects.get(id=1)
+    good = Goods.objects.filter(number=number)[0]
+    amount_to_change = ShopCar.objects.filter(username=user.name, good=good)[0]
+    amount_to_change.good_amount += 1
+    amount_to_change.save()
+    return HttpResponseRedirect(reverse('shop:my_car'))
+
+
+def car_reduce_amount(request, number):
+    user = User.objects.get(id=1)
+    good = Goods.objects.filter(number=number)[0]
+    amount_to_change = ShopCar.objects.filter(username=user.name, good=good)[0]
+    if amount_to_change.good_amount > 1:
+        amount_to_change.good_amount -= 1
+        amount_to_change.save()
+    return HttpResponseRedirect(reverse('shop:my_car'))
 
 
 def buy(request):
     seller = User.objects.get(id=1)
     user = User.objects.get(id=1)
     goods_number = request.POST.getlist('checkbox_list')
+    if len(goods_number) == 0:
+        return HttpResponseRedirect(reverse('shop:my_car'))
 
     # 订单号的生成
     number_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     number_random = random.randint(0, 999999)
     number = str(number_time) + str(number_random).zfill(6)
+
     total_money = 0
+    good_in_detail_list = []
     for one in goods_number:
         good = Goods.objects.filter(number=one)[0]
-        total_money = total_money + good.price
-        detail_list_to_save = DetailList(number=number,
-                                         buyer=user,
-                                         seller=seller.name,
-                                         goods_number=good.number,
-                                         goods_version=good.version,
-                                         status=0)
-        detail_list_to_save.save()
-        print(total_money)
-    return render(request, "Welcome.html", {"total_money": total_money})
+        in_car = ShopCar.objects.filter(username=user.name, good=good)[0]
+        total_money = total_money + good.price*in_car.good_amount
+        
+        # detail_list_to_save = DetailList(number=number,
+        #                                  buyer=user,
+        #                                  seller=seller.name,
+        #                                  goods_number=good.number,
+        #                                  goods_version=good.version,
+        #                                  amount=in_car.good_amount)
+
+        one_good = {"good": good, "amount": in_car.good_amount}
+        good_in_detail_list.append(one_good)
+        # detail_list_to_save.save()
+    return render(request, "DetailList.html", {"total_money": total_money,
+                                               "good_in_detail_list": good_in_detail_list,
+                                               "number": number})
 
 
 def pay(request):

@@ -7,15 +7,24 @@
 <body>
 <form action="{% url 'shop:buy' %}" method="POST">
 {% csrf_token %}
-        {% for foo in good %}
+        {% for foo in car %}
         -----------------------------------------------------------------------------------<br/>
-        商品名：{{ foo.name }}<br/>
-        价格：{{ foo.price }}<br/>
-        {{ foo.image|safe }}<br/>
-        <input type="checkbox" value="{{ foo.number }}" name="checkbox_list">数量：{{ foo.amount }}
-
+        商品名：{{ foo.good.name }}<br/>
+        价格：{{ foo.good.price }}<br/>
+        {{ foo.good.image|safe }}<br/>
+        <input type="checkbox" value="{{ foo.good.number }}" name="checkbox_list">购买数量：{{ foo.good_amount }}
+        <a href="{% url 'shop:car_increase_amount' foo.good.number %}" class="btn btn-primary" name="more">
+            <input type="button" value="+" name="more">
+        </a>
+        <a href="{% url 'shop:car_reduce_amount' foo.good.number %}" class="btn btn-primary" name="less">
+            <input type="button" value="-">
+        </a>
 <br/>
-        <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">查看商品详情</a><br/>
+        <a href="{% url 'shop:good_page' foo.good.number %}" class="btn btn-primary">查看商品详情</a>
+        <a href="{% url 'shop:delete_from_car' foo.good.number %}" class="btn btn-primary">
+            <input type="button" value="从购物车中删除">
+        </a>
+        <br/>
         -----------------------------------------------------------------------------------<br/>
     {% endfor %}
     <input type="submit" value="购买">

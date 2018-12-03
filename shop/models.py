@@ -59,10 +59,9 @@ class Comment(models.Model):
 
 
 class ShopCar(models.Model):
-    user = models.ForeignKey(User)
-    goods_number = models.CharField(max_length=20)
-    goods_version = models.IntegerField()
-    goods_amount = models.IntegerField(default=1)
+    username = models.CharField(max_length=20)
+    good = models.ForeignKey(Goods)
+    good_amount = models.IntegerField(default=1)
 
 
 class Cookie(models.Model):
