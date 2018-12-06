@@ -5,8 +5,11 @@
     <title>详单</title>
 </head>
 <body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
     <form action="{% url 'shop:pay' %}" method="POST">
-    订单号：{{ number }}<br/>
+    {% csrf_token %}
+        订单号：<p>{{ number }}</p><br/>
+    <input type="text" value="{{ number }}" name="number" hidden>
     {% for foo in good_in_detail_list %}
         商品名：{{ foo.good.name }}<br/>
         价格：￥{{ foo.good.price }}<br/>
@@ -14,6 +17,7 @@
         数量：{{ foo.amount }}<br/><br/>
     {% endfor %}
     <h3>总价：￥{{ total_money }}</h3>
+    <input type="submit" value="购买">
     </form>
 </body>
 </html>

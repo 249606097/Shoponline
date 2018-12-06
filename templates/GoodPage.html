@@ -5,7 +5,7 @@
     <title>{{ good.name }}</title>
 </head>
 <body>
-
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
     商品编号：{{ good.number }}<br/>
     商家：{{ good.seller.name }}<br/>
     商品名：{{ good.name }}<br/>
@@ -15,12 +15,12 @@
     头像：{{ good.image|safe }}<br/>
     介绍：{{ good.description|safe }}<br/><br/><br/>
     上架时间：{{ good.put_on_time }}<br/>
-    <a href="{% url 'shop:re_edit' good.number %}" class="btn btn-primary">修改</a><br/>
-    <a href="{% url 'shop:delete_good' good.number %}" class="btn btn-primary">删除</a><br/>
 
+<a {{ buyer_authority }}>
 <form action="{% url 'shop:add_to_car' good.number %}">
     <input type="submit" value="添加到购物车">
 </form>
+</a>
 
 <a {{ seller_authority }}>
     <form action="{% url 'shop:re_edit' good.number %}">

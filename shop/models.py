@@ -24,6 +24,8 @@ class Goods(models.Model):
     create_time = models.DateTimeField(default=timezone.now)
     put_on_time = models.DateTimeField()
     status = models.IntegerField(default=0)
+    # status 0 为 未上架
+    #        1 为 上架
 
 
 class OldGoods(models.Model):
@@ -49,6 +51,10 @@ class DetailList(models.Model):
     create_time = models.DateTimeField(default=timezone.now)
     finish_time = models.DateTimeField(null=True)
     status = models.IntegerField(default=0)
+    # status 0为订单 创建 未付款
+    #        1为订单 付款 未完成
+    #        2为订单 完成 可评论
+    #        3为订单  已评论
 
 
 class Comment(models.Model):

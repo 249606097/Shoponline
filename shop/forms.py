@@ -36,12 +36,32 @@ class CaptchaForm(forms.Form):
     captcha = CaptchaField(label="验证码")
 
 
+class ChangePasswordForm(forms.Form):
+    old_password = fields.CharField(widget=widgets.PasswordInput(),
+                                    label="旧密码")
+    new_password = fields.CharField(widget=widgets.PasswordInput(),
+                                    label="输入新密码")
+    new_password_re = fields.CharField(widget=widgets.PasswordInput(),
+                                       label="重新输入新密码")
+    captcha = CaptchaField(label="验证码")
 
 
+class ForgetPasswordForm(forms.Form):
+    username = fields.CharField(widget=widgets.TextInput(),
+                                label="用户名")
+    answer = fields.CharField(widget=widgets.TextInput(),
+                              label="密保问题答案")
+    new_password = fields.CharField(widget=widgets.PasswordInput(),
+                                    label="输入新密码")
+    new_password_re = fields.CharField(widget=widgets.PasswordInput(),
+                                       label="重新输入新密码")
+    captcha = CaptchaField(label="验证码")
 
 
-
-
+class CommentForm(forms.Form):
+    comment_content = fields.CharField(widget=widgets.Textarea,
+                                       label="评论内容")
+    captcha = CaptchaField(label="验证码")
 
 
 

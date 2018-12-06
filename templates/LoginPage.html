@@ -5,6 +5,7 @@
     <title>登陆</title>
 </head>
 <body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
     <form action="{% url 'shop:login' %}" method="POST">
         {% csrf_token %}
         {% for foo in form %}

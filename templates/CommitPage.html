@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论</title>
+</head>
+<body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
+    <form action="{% url 'shop:commit' %}" method="POST">
+    {% csrf_token %}
+        <input type="text" value="{{ list_number }}" name="list_number" >
+        <input type="text" value="{{ good_number }}" name="good_number" >
+
+        商品名：{{ good.name }}<br/>
+        卖家：{{ good.seller.name }}<br/>
+        {{ good.image|safe }}<br/>
+        价格：￥{{ good.price }}<br/>
+
+        {% for foo in form %}
+            {{ foo.label }}:{{ foo }}<br/>
+        {% endfor %}
+        <input type="submit" value="提交">
+        <br/>{{ result }}
+    </form>
+</body>
+</html>

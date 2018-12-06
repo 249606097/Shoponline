@@ -5,6 +5,7 @@
     <title>商品列表</title>
 </head>
 <body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
     <form action="{% url 'shop:list' %}" method="POST">
         {% for foo in goods %}
             ---------------------------------------------------------------------------
@@ -13,7 +14,7 @@
         商品名：{{ foo.name }}<br/>
         价格：￥{{ foo.price }}<br/>
         头像：{{ foo.image|safe }}
-        <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">查看商品详情</a><br/>
+        <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">商品详情</a><br/>
             ---------------------------------------------------------------------------
             <br/><br/>
         {% endfor %}

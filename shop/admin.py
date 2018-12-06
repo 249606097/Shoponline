@@ -12,3 +12,5 @@ class GoodAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Goods)
+admin.site.register(DetailList)
+admin.site.register(Comment)

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商家账单</title>
+</head>
+<body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
+    {% for foo in all_list %}
+        <form action="{% url 'shop:finish_list' %}" method="POST">
+        {% csrf_token %}
+        订单号：{{ foo.detail_list.number }}
+        <input type="text" value="{{ foo.detail_list.number }}" name="list_number" hidden><br/>
+        买家：{{ foo.detail_list.buyer.name }}<br/>
+        商品名：{{ foo.good.name }}<br/>
+        <a href="{% url 'shop:good_page' foo.good.number %}" class="btn btn-primary">商品详情</a>
+        <input type="text" value="{{ foo.good.number }} " name="good_number" hidden><br/>
+        {{ foo.good.image|safe }}<br/>
+        ￥{{ foo.good.price }} × {{ foo.detail_list.amount }}个 = ￥{{ foo.one_total }}
+            {% if foo.detail_list.status == 1 %}
+                <input type="submit" value="完成">
+            {% endif %}
+            <br/>
+        </form>
+    {% endfor %}
+</body>
+</html>

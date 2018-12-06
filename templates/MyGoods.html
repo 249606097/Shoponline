@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的商品</title>
+</head>
+<body>
+    <a href="{% url 'shop:welcome' %}">首页</a><br/>
+    <form action="{% url 'shop:my_goods' %}">
+        {% for foo in goods %}
+
+            商品名：{{ foo.good.name }}<br/>
+            {{ foo.good.image|safe }}<br/>
+            价格：￥{{ foo.good.price }}<br/>
+            库存：{{ foo.good.amount }}<br/>
+            成交额：{{ foo.good.turnover }}<br/>
+            状态：{{ foo.situation }}
+            <a href="{% url 'shop:put_on' foo.good.number %}" class="btn btn-primary" {{ foo.on_authority }}>
+                <input type="button" value="上架">
+            </a>
+            <a href="{% url 'shop:put_off' foo.good.number %}" class="btn btn-primary" {{ foo.off_authority }}>
+                <input type="button" value="下架">
+            </a>
+            <br/>
+            <a href="{% url 'shop:good_page' foo.good.number %}" class="btn btn-primary">商品详情</a><br/>
+            <br/>
+        {% endfor %}
+
+    </form>
+</body>
+</html>
