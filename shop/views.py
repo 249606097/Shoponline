@@ -46,11 +46,31 @@ def check_cookie(request):
 
 def welcome(request):
     man = check_cookie(request)
+    login_authority = "hidden"
+    un_login_authority = "hidden"
+    seller_authority = "hidden"
+    buyer_authority = "hidden"
     if man is False:
         man = "游客"
-        return render(request, "Welcome.html", {"man": man})
+        un_login_authority = ""
+        return render(request, "Welcome.html", {"man": man,
+                                                "login_authority": login_authority,
+                                                "un_login_authority": un_login_authority,
+                                                "seller_authority": seller_authority,
+                                                "buyer_authority": buyer_authority})
     else:
-        return render(request, "Welcome.html", {"man": man})
+        login_authority = ""
+        user = User.objects.filter(name=man)
+        if user[0].type == 2:
+            seller_authority = ""
+        if user[0].type == 1:
+            buyer_authority = ""
+        return render(request, "Welcome.html", {"man": man,
+                                                "login_authority": login_authority,
+                                                "un_login_authority": un_login_authority,
+                                                "seller_authority": seller_authority,
+                                                "buyer_authority": buyer_authority
+                                                })
 
 
 def username_test(username):
@@ -250,7 +270,24 @@ def logout(request):
 
 def goods_list(request):
     goods = Goods.objects.filter(status=1)
+    if request.method == "POST":
+        order = request.POST.get("order")
+        if order == "按价格 升序":
+            goods = goods.order_by("price")
+        if order == "按价格 降序":
+            goods = goods.order_by("-price")
+        if order == "按时间 升序":
+            goods = goods.order_by("put_on_time")
+        if order == "按时间 降序":
+            goods = goods.order_by("-put_on_time")
     return render(request, "GoodsList.html", {"goods": goods})
+
+
+def search(request):
+    if request.method == "POST":
+        keywords = request.POST.get("keywords")
+        goods = Goods.objects.filter(status=1, name__icontains=keywords)
+        return render(request, "SearchPage.html", {"goods": goods})
 
 
 def edit_good(request):
@@ -461,9 +498,15 @@ def good_page(request, number):
         buyer = User.objects.filter(name=man)
         if len(buyer) != 0 and buyer[0].type == 1:
             buyer_authority = ""
+        comments = Comment.objects.filter(goods=good)
+        no_comment = "无评论"
+        if len(comments) != 0:
+            no_comment = ""
         return render(request, "GoodPage.html", {"good": good,
                                                  "seller_authority": seller_authority,
-                                                 "buyer_authority": buyer_authority})
+                                                 "buyer_authority": buyer_authority,
+                                                 "comments": comments,
+                                                 "no_comment": no_comment})
 
 
 def jump_to_none(request):
@@ -587,7 +630,15 @@ def car_page(request):
         return HttpResponseRedirect(reverse('shop:welcome'))
 
     car = ShopCar.objects.filter(username=man)
-    return render(request, "ShopCar.html", {"car": car})
+    buy_authority = ""
+    no_good = ""
+    if len(car) == 0:
+        buy_authority = "hidden"
+        no_good = "无商品"
+
+    return render(request, "ShopCar.html", {"car": car,
+                                            "buy_authority": buy_authority,
+                                            "no_good": no_good})
 
 
 def car_increase_amount(request, number):
@@ -732,7 +783,7 @@ def pay(request):
         user.fund -= total_money
         user.save()
 
-    return render(request, "NOPage.html", {})
+    return HttpResponseRedirect(reverse('shop:buyer_list'))
 
 
 def clean_not_pay_list():
@@ -756,8 +807,7 @@ def show_buyer_list(request):
 
     user = User.objects.filter(name=man)
 
-    detail_list = DetailList.objects.filter(buyer=user)
-    detail_list.order_by('status', 'create_time')
+    detail_list = DetailList.objects.filter(buyer=user).order_by('status', '-create_time')
 
     all_list = []
     for one in detail_list:
@@ -769,7 +819,17 @@ def show_buyer_list(request):
         else:
             good = good[0]
             one_total = good.price * one.amount
-            the_good = {"detail_list": one, "good": good, "one_total": one_total}
+            if one.status == 0:
+                list_situation = "未付款"
+            elif one.status == 1:
+                list_situation = "未完成"
+            elif one.status == 2:
+                list_situation = "已完成"
+            elif one.status == 3:
+                list_situation = "已评论"
+            else:
+                list_situation = ""
+            the_good = {"detail_list": one, "good": good, "one_total": one_total, "list_situation": list_situation}
             all_list.append(the_good)
 
     return render(request, "BuyerList.html", {"all_list": all_list})
@@ -787,8 +847,7 @@ def show_seller_list(request):
 
     seller = User.objects.filter(name=man)[0]
 
-    detail_list = DetailList.objects.filter(seller=seller.name)
-    detail_list.order_by('status', 'create_time')
+    detail_list = DetailList.objects.filter(seller=seller.name).order_by('status', '-create_time')
 
     all_list = []
     for one in detail_list:
@@ -800,7 +859,17 @@ def show_seller_list(request):
         else:
             good = good[0]
             one_total = good.price * one.amount
-            the_good = {"detail_list": one, "good": good, "one_total": one_total}
+            if one.status == 0:
+                list_situation = "未付款"
+            elif one.status == 1:
+                list_situation = "未完成"
+            elif one.status == 2:
+                list_situation = "已完成"
+            elif one.status == 3:
+                list_situation = "买家已评论"
+            else:
+                list_situation = ""
+            the_good = {"detail_list": one, "good": good, "one_total": one_total, "list_situation": list_situation}
             all_list.append(the_good)
 
     return render(request, "SellerList.html", {"all_list": all_list})
@@ -912,6 +981,7 @@ def put_on(request, number):
 
     if good.seller.name == man:
         if good.status == 0:
+            good.put_on_time = datetime.datetime.now().replace(tzinfo=None)
             good.status = 1
             good.save()
 
@@ -975,7 +1045,10 @@ def commit(request):
         if not form.is_valid():
             result = "输入正确的验证码"
             return render(request, "CommitPage.html", {"form": form, "number": good_number,
-                                                       "good": good, "result": result})
+                                                       "good": good, "result": result,
+                                                       "list_number": list_number,
+                                                       "good_number": good_number
+                                                       })
         else:
             commit_content = form.cleaned_data['comment_content']
             if len(commit_content) == 0:
@@ -1027,8 +1100,6 @@ def turn_to_commit(request):
                                                    "good": good,
                                                    "list_number": list_number,
                                                    "good_number": good_number})
-
-
 
 
 

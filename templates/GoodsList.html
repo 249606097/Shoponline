@@ -6,7 +6,20 @@
 </head>
 <body>
     <a href="{% url 'shop:welcome' %}">首页</a><br/>
+    <form action="{% url 'shop:search' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="keywords">
+        <input type="submit" value="搜索">
+    </form>
+
     <form action="{% url 'shop:list' %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="按价格 升序" name="order">
+        <input type="submit" value="按价格 降序" name="order">
+        <input type="submit" value="按时间 升序" name="order">
+        <input type="submit" value="按时间 降序" name="order">
+    </form>
+    <form action="{% url 'shop:list' %}">
         {% for foo in goods %}
             ---------------------------------------------------------------------------
             <br/>

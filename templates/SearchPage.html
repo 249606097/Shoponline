@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索</title>
+</head>
+<body>
+        <a href="{% url 'shop:welcome' %}">首页</a>
+        <a href="{% url 'shop:list' %}" class="btn btn-primary">商品列表</a><br/>
+        {% for foo in goods %}
+            ---------------------------------------------------------------------------
+            <br/>
+        商品编码：{{ foo.number }}<br/>
+        商品名：{{ foo.name }}<br/>
+        价格：￥{{ foo.price }}<br/>
+        头像：{{ foo.image|safe }}
+        <a href="{% url 'shop:good_page' foo.number %}" class="btn btn-primary">商品详情</a><br/>
+            ---------------------------------------------------------------------------
+            <br/><br/>
+        {% endfor %}
+</body>
+</html>

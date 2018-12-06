@@ -10,6 +10,9 @@ class User(models.Model):
     fund = models.FloatField(default=0)
     type = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class Goods(models.Model):
     number = models.CharField(max_length=20)
@@ -27,6 +30,9 @@ class Goods(models.Model):
     # status 0 为 未上架
     #        1 为 上架
 
+    def __str__(self):
+        return self.name
+
 
 class OldGoods(models.Model):
     number = models.CharField(max_length=20)
@@ -39,6 +45,9 @@ class OldGoods(models.Model):
     create_time = models.DateTimeField()
     put_on_time = models.DateTimeField()
     put_off_time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
 
 
 class DetailList(models.Model):

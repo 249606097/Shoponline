@@ -6,6 +6,7 @@
 </head>
 <body>
     <a href="{% url 'shop:welcome' %}">首页</a><br/>
+    ----------------------------------------------------------------------------------------<br/>
     {% for foo in all_list %}
         <form action="{% url 'shop:finish_list' %}" method="POST">
         {% csrf_token %}
@@ -16,12 +17,14 @@
         <a href="{% url 'shop:good_page' foo.good.number %}" class="btn btn-primary">商品详情</a>
         <input type="text" value="{{ foo.good.number }} " name="good_number" hidden><br/>
         {{ foo.good.image|safe }}<br/>
-        ￥{{ foo.good.price }} × {{ foo.detail_list.amount }}个 = ￥{{ foo.one_total }}
+        ￥{{ foo.good.price }} × {{ foo.detail_list.amount }}个 = ￥{{ foo.one_total }}<br/>
+        订单状态：{{ foo.list_situation }}
             {% if foo.detail_list.status == 1 %}
-                <input type="submit" value="完成">
+                <input type="submit" value="完成"><br/>
             {% endif %}
             <br/>
         </form>
+        ----------------------------------------------------------------------------------------<br/>
     {% endfor %}
 </body>
 </html>

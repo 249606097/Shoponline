@@ -5,7 +5,7 @@
     <title>购物车</title>
 </head>
 <body>
-<a href="{% url 'shop:welcome' %}">首页</a><br/>
+<a href="{% url 'shop:welcome' %}">首页</a><br/><h3>{{ no_good }}</h3><br/>
 <form action="{% url 'shop:buy' %}" method="POST">
 {% csrf_token %}
         {% for foo in car %}
@@ -28,7 +28,7 @@
         <br/>
         -----------------------------------------------------------------------------------<br/>
     {% endfor %}
-    <input type="submit" value="购买">
+    <input type="submit" value="购买" {{ buy_authority }}>
 </form>
 
 </body>

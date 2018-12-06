@@ -13,10 +13,7 @@
     库存：{{ good.amount }}<br/>
     成交量：{{ good.turnover }}<br/>
     头像：{{ good.image|safe }}<br/>
-    介绍：{{ good.description|safe }}<br/><br/><br/>
-    上架时间：{{ good.put_on_time }}<br/>
-
-<a {{ buyer_authority }}>
+    <a {{ buyer_authority }}>
 <form action="{% url 'shop:add_to_car' good.number %}">
     <input type="submit" value="添加到购物车">
 </form>
@@ -31,6 +28,17 @@
      <input type="submit" value="删除">
  </form>
 </a>
+    介绍：{{ good.description|safe }}<br/><br/><br/>
+    上架时间：{{ good.put_on_time }}<br/>
+
+    <br/>
+    评论区：<br/>
+    {{ no_comment }}<br/>
+{% for foo in comments %}
+    买家：{{ foo.user.name }}<br/>
+    内容：{{ foo.content }}<br/>
+{% endfor %}
+
 
 </body>
 </html>

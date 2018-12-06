@@ -8,8 +8,8 @@
     <a href="{% url 'shop:welcome' %}">首页</a><br/>
     <form action="{% url 'shop:commit' %}" method="POST">
     {% csrf_token %}
-        <input type="text" value="{{ list_number }}" name="list_number" >
-        <input type="text" value="{{ good_number }}" name="good_number" >
+        <input type="text" value="{{ list_number }}" name="list_number" hidden>
+        <input type="text" value="{{ good_number }}" name="good_number" hidden>
 
         商品名：{{ good.name }}<br/>
         卖家：{{ good.seller.name }}<br/>

@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^put_off/(?P<number>\d+)/$', views.put_off, name='put_off'),
     url(r'^to_commit$', views.turn_to_commit, name='turn_to_commit'),
     url(r'^commit$', views.commit, name='commit'),
+    url(r'^search$', views.search, name='search'),
 
     url(r'$', views.jump_to_none),
 ]
