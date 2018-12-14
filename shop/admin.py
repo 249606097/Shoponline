@@ -9,8 +9,8 @@ class GoodStatusListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('0', _(u'未上架')),
-            ('1', _(u'已上架')),
+            ('0', _(u'0 未上架')),
+            ('1', _(u'1 已上架')),
         )
 
     def queryset(self, request, queryset):
@@ -58,8 +58,8 @@ class UserStatusListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('1', _(u'买家')),
-            ('2', _(u'卖家')),
+            ('1', _(u'1 买家')),
+            ('2', _(u'2 卖家')),
         )
 
     def queryset(self, request, queryset):
@@ -75,10 +75,10 @@ class ListStatusListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('0', _(u'未付款')),
-            ('1', _(u'未完成')),
-            ('2', _(u'未评论')),
-            ('3', _(u'已评论')),
+            ('0', _(u'0 未付款')),
+            ('1', _(u'1 未完成')),
+            ('2', _(u'2 未评论')),
+            ('3', _(u'3 已评论')),
         )
 
     def queryset(self, request, queryset):

@@ -564,10 +564,13 @@ def delete_good(request, number):
                                 description=good.description,
                                 create_time=good.create_time,
                                 put_on_time=good.put_on_time)
-    old_good_to_save.save()
+    good_in_detail = DetailList.objects.filter(goods_number=good.number,
+                                               status=1)
+    if len(good_in_detail) == 0:
+        old_good_to_save.save()
 
-    good_in_car.delete()
-    good.delete()
+        good_in_car.delete()
+        good.delete()
     return HttpResponseRedirect(reverse('shop:welcome'))
 
 
@@ -719,10 +722,12 @@ def buy(request):
 
         one_good = {"good": good, "amount": in_car.good_amount}
         good_in_detail_list.append(one_good)
-        detail_list_to_save.save()
+        if user.fund >= total_money:
+            detail_list_to_save.save()
     return render(request, "DetailList.html", {"total_money": total_money,
                                                "good_in_detail_list": good_in_detail_list,
-                                               "number": number})
+                                               "number": number,
+                                               "user": user})
 
 
 def pay(request):

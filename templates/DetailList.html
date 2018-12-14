@@ -17,7 +17,12 @@
         数量：{{ foo.amount }}<br/><br/>
     {% endfor %}
     <h3>总价：￥{{ total_money }}</h3>
-    <input type="submit" value="购买">
+    {% if user.fund >= total_money %}
+        <input type="submit" value="购买">
+        {% else %}
+        <input type="button" value="余额不足无法购买">
+    {% endif %}
+
     </form>
 </body>
 </html>
