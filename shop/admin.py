@@ -50,6 +50,10 @@ class GoodPriceListFilter(admin.SimpleListFilter):
             return queryset.filter(price__gte=200, price__lte=250)
         if self.value() == '6':
             return queryset.filter(price__gte=250, price__lte=300)
+        if self.value() == '7':
+            return queryset.filter(price__gte=300, price__lte=350)
+        if self.value() == '8':
+            return queryset.filter(price__gte=350, price__lte=400)
 
 
 class UserStatusListFilter(admin.SimpleListFilter):
